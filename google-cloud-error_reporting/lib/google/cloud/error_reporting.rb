@@ -64,6 +64,8 @@ module Google
       # @param [Integer] timeout Default timeout to use in requests. Optional.
       # @param [String] endpoint Override of the endpoint host name. Optional.
       #   If the param is nil, uses the default endpoint.
+      # @param [String] quota_project The project ID for a project that can be
+      #   used by client libraries for quota and billing purposes. Optional.
       # @param [String] project Alias for the `project_id` argument. Deprecated.
       # @param [String] keyfile Alias for the `credentials` argument.
       #   Deprecated.
