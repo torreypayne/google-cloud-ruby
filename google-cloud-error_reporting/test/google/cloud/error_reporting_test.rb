@@ -66,7 +66,7 @@ describe Google::Cloud::ErrorReporting, :mock_error_reporting do
 
     it "uses provided endpoint" do
       endpoint = "errorreporting-endpoint2.example.com"
-      stubbed_service = ->(project, credentials, timeout: nil, host: nil) {
+      stubbed_service = ->(project, credentials, timeout: nil, host: nil, quota_project: nil) {
         _(project).must_equal "project-id"
         _(credentials).must_equal default_credentials
         _(timeout).must_be :nil?
@@ -83,6 +83,28 @@ describe Google::Cloud::ErrorReporting, :mock_error_reporting do
           _(error_reporting.service).must_be_kind_of OpenStruct
         end
       end
+    end
+
+    it "uses configuration quota_project" do
+      quota_project = "configure-quota-project"
+      Google::Cloud::ErrorReporting.configure do |config|
+        config.quota_project = quota_project
+      end
+
+      stubbed_service = ->(project, credentials, timeout: nil, host: nil, quota_project: nil) {
+        _(project).must_equal "project-id"
+        _(quota_project).must_equal "configure-quota-project"
+        OpenStruct.new project: project
+      }
+
+      ENV.stub :[], nil do
+        Google::Cloud::ErrorReporting::Service.stub :new, stubbed_service do
+          error_reporting = Google::Cloud::ErrorReporting.new project_id: "project-id",
+                                                              credentials: default_credentials
+          _(error_reporting).must_be_kind_of Google::Cloud::ErrorReporting::Project
+        end
+      end
+      Google::Cloud::ErrorReporting.configure.reset!
     end
 
     it "uses provided project (alias), keyfile (alias), service, and version" do
@@ -315,7 +337,7 @@ describe Google::Cloud::ErrorReporting, :mock_error_reporting do
         _(scope).must_equal default_scopes
         "error_reporting-credentials"
       }
-      stubbed_service = ->(project, credentials, timeout: nil, host: nil) {
+      stubbed_service = ->(project, credentials, timeout: nil, host: nil, quota_project: nil) {
         _(project).must_equal "project-id"
         _(credentials).must_equal "error_reporting-credentials"
         _(timeout).must_be :nil?
@@ -352,7 +374,7 @@ describe Google::Cloud::ErrorReporting, :mock_error_reporting do
         _(scope).must_equal default_scopes
         "error_reporting-credentials"
       }
-      stubbed_service = ->(project, credentials, timeout: nil, host: nil) {
+      stubbed_service = ->(project, credentials, timeout: nil, host: nil, quota_project: nil) {
         _(project).must_equal "project-id"
         _(credentials).must_equal "error_reporting-credentials"
         _(timeout).must_be :nil?
@@ -389,7 +411,7 @@ describe Google::Cloud::ErrorReporting, :mock_error_reporting do
         _(scope).must_equal default_scopes
         "error_reporting-credentials"
       }
-      stubbed_service = ->(project, credentials, timeout: nil, host: nil) {
+      stubbed_service = ->(project, credentials, timeout: nil, host: nil, quota_project: nil) {
         _(project).must_equal "project-id"
         _(credentials).must_equal "error_reporting-credentials"
         _(timeout).must_equal 42
@@ -423,7 +445,7 @@ describe Google::Cloud::ErrorReporting, :mock_error_reporting do
 
     it "uses error_reporting config for endpoint" do
       endpoint = "errorreporting-endpoint2.example.com"
-      stubbed_service = ->(project, credentials, timeout: nil, host: nil) {
+      stubbed_service = ->(project, credentials, timeout: nil, host: nil, quota_project: nil) {
         _(project).must_equal "project-id"
         _(credentials).must_equal default_credentials
         _(timeout).must_be :nil?
@@ -454,7 +476,7 @@ describe Google::Cloud::ErrorReporting, :mock_error_reporting do
         _(scope).must_equal default_scopes
         "error_reporting-credentials"
       }
-      stubbed_service = ->(project, credentials, timeout: nil, host: nil) {
+      stubbed_service = ->(project, credentials, timeout: nil, host: nil, quota_project: nil) {
         _(project).must_equal "project-id"
         _(credentials).must_equal "error_reporting-credentials"
         _(timeout).must_equal 42

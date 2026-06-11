@@ -82,18 +82,22 @@ module Google
                    timeout: nil,
                    endpoint: nil,
                    project: nil,
-                   keyfile: nil
+                   keyfile: nil,
+                   quota_project: nil
         project_id    ||= project
         project_id    ||= ErrorReporting::Project.default_project_id
         scope         ||= configure.scope
         timeout       ||= configure.timeout
         endpoint      ||= configure.endpoint
+        quota_project ||= configure.quota_project
         credentials   ||= keyfile || default_credentials(scope: scope)
 
         credentials = resolve_credentials credentials, scope
         project_id = resolve_project_id project_id, credentials
 
-        service = ErrorReporting::Service.new project_id, credentials, host: endpoint, timeout: timeout
+        service = ErrorReporting::Service.new project_id, credentials,
+                                              host: endpoint, timeout: timeout,
+                                              quota_project: quota_project
         ErrorReporting::Project.new service
       end
 
