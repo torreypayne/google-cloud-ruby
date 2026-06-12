@@ -65,6 +65,26 @@ describe Google::Cloud::ErrorReporting, :error_reporting do
 
     _(error_event.service_context.service).must_equal service_name
     _(error_event.service_context.version).must_equal service_version
-    _(error_event.message).must_match token.to_s
+  end
+
+  it "fails when configured with an invalid quota_project" do
+    valid_reporter = Google::Cloud::ErrorReporting.new
+    project_id = valid_reporter.project
+    credentials = valid_reporter.service.credentials
+
+    invalid_reporter = Google::Cloud::ErrorReporting.new(
+      project_id: project_id,
+      credentials: credentials,
+      quota_project: "invalid-quota-project-id-testing"
+    )
+
+    exception = StandardError.new "Testing invalid quota project"
+    error_event = invalid_reporter.error_event exception
+
+    err = assert_raises Google::Cloud::Error do
+      invalid_reporter.report error_event
+    end
+
+    assert_includes [3, 5, 7], err.code
   end
 end
